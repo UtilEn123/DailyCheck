@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>แบบบันทึกนักศึกษาฝึกงาน</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header>
+    <h1>แบบบันทึกนักศึกษาฝึกงาน</h1>
+    <p>ระบบจัดการและบันทึกกิจกรรมการฝึกงานรายวัน</p>
+  </header>
+  <main>
+    <!-- กำหนด id ให้ฟอร์มเพื่อใช้งานกับ jQuery -->
+    <form id="myForm" action="submit.php" method="post" enctype="multipart/form-data">
+      <fieldset>
+        <legend>ข้อมูลนักศึกษา</legend>
+        <label for="firstname">ชื่อ:</label>
+        <input type="text" id="firstname" name="firstname" placeholder="กรอกชื่อ" required>
+
+        <label for="lastname">นามสกุล:</label>
+        <input type="text" id="lastname" name="lastname" placeholder="กรอกนามสกุล" required>
+      </fieldset>
+
+      <fieldset>
+        <legend>กิจกรรมรายวัน</legend>
+        <label for="activity_am">เวลา 08.00-12.00:</label>
+        <input type="text" id="activity_am" name="activity_am" placeholder="กิจกรรมที่ทำ" required>
+
+        <label for="image_am">อัปโหลดรูป (เช้า):</label>
+        <input type="file" id="image_am" name="image_am" required>
+
+        <label for="activity_pm">เวลา 13.00-17.00:</label>
+        <input type="text" id="activity_pm" name="activity_pm" placeholder="กิจกรรมที่ทำ" required>
+
+        <label for="image_pm">อัปโหลดรูป (บ่าย):</label>
+        <input type="file" id="image_pm" name="image_pm" required>
+      </fieldset>
+
+      <fieldset>
+        <legend>กิจกรรมอื่นๆ</legend>
+        <label for="other_activities">กิจกรรมเพิ่มเติม:</label>
+        <textarea id="other_activities" name="other_activities" rows="4" placeholder="กรอกกิจกรรมเพิ่มเติม"></textarea>
+      </fieldset>
+
+      <button type="submit">บันทึกข้อมูล</button>
+    </form>
+  </main>
+  <footer>
+    <p>พัฒนาโดย: ระบบจัดการฝึกงาน © 2025</p>
+  </footer>
+
+  <!-- Modal Popup -->
+  <div id="popupModal" class="modal">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <p id="popupMessage"></p>
+      <button id="modalOk">ตกลง</button>
+    </div>
+  </div>
+
+  <!-- รวม jQuery จาก CDN -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <!-- สคริปต์ AJAX และ modal -->
+  <script>
+    $(document).ready(function(){
+      // ส่งแบบฟอร์มด้วย AJAX โดยไม่รีโหลดหน้า
+      $("#myForm").submit(function(e){
+        e.preventDefault(); // ป้องกันการรีโหลดหน้า
+
+        var formData = new FormData(this);
+        $.ajax({
+          url: "submit.php",
+          type: "POST",
+          data: formData,
+          contentType: false,
+          processData: false,
+          success: function(response){
+            // แสดงข้อความใน modal popup
+            $("#popupMessage").text(response);
+            $("#popupModal").fadeIn();
+            // รีเซ็ตฟอร์มถ้าต้องการ
+            $("#myForm")[0].reset();
+          },
+          error: function(jqXHR, textStatus, errorThrown) {
+            $("#popupMessage").text("เกิดข้อผิดพลาด: " + textStatus);
+            $("#popupModal").fadeIn();
+          }
+        });
+      });
+
+      // เมื่อกดปิด modal
+      $(".close, #modalOk").click(function(){
+        $("#popupModal").fadeOut();
+      });
+    });
+  </script>
+</body>
+</html>
